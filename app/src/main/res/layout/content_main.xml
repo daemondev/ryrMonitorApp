@@ -8,6 +8,12 @@
     tools:context="com.example.eidan.wsapp.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_agent_id"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
     <TextView
         android:id="@+id/txtHistory"
         android:layout_width="340dp"
@@ -28,12 +34,12 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
         android:hint="Enter a message"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.724"
+        app:layout_constraintHorizontal_bias="0.538"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtHistory" />
 

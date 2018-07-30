@@ -6,7 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.eidan.wsapp.MainActivity">
 
+    <!--android.support.design.widget.CoordinatorLayout-->
+    <!--android.support.constraint.ConstraintLayout-->
+
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -20,7 +24,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
+
     <include layout="@layout/content_main" />
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

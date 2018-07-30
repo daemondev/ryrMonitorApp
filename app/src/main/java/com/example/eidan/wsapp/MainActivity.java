@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,6 +21,8 @@ import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.util.Log;
 import android.os.Build;
@@ -27,11 +31,23 @@ public class MainActivity extends AppCompatActivity {
     private WebSocketClient wsClient;
     EditText txtMessage;
     TextView txtHistory;
+    List<Agent> lstAgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        lstAgent = new ArrayList<>();
+        lstAgent.add(new Agent("mobil", "982929041", R.drawable.call, 1777));
+        lstAgent.add(new Agent("mobil", "982929041", R.drawable.hangup, 1777));
+        lstAgent.add(new Agent("mobil", "982929041", R.drawable.ring, 1777));
+
+        RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerview_agent_id);
+        RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this, lstAgent);
+        myrv.setLayoutManager(new GridLayoutManager(this, 3));
+        myrv.setAdapter(myAdapter);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -60,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                lstAgent.add(new Agent("mobil", "982929041", R.drawable.call, 1777));
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
