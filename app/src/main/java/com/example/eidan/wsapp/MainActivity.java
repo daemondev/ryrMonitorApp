@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,11 +28,20 @@ import java.util.List;
 import android.util.Log;
 import android.os.Build;
 
+import android.support.v7.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Context;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
 public class MainActivity extends AppCompatActivity {
     private WebSocketClient wsClient;
     EditText txtMessage;
     TextView txtHistory;
     List<Agent> lstAgent;
+
+    RecyclerView myrv;
+    RecyclerViewAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
         lstAgent.add(new Agent("mobil", "982929041", R.drawable.hangup, 1777));
         lstAgent.add(new Agent("mobil", "982929041", R.drawable.ring, 1777));
 
-        RecyclerView myrv = (RecyclerView) findViewById(R.id.recyclerview_agent_id);
-        RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(this, lstAgent);
+        myrv = (RecyclerView) findViewById(R.id.recyclerview_agent_id);
+        myAdapter = new RecyclerViewAdapter(this, lstAgent);
         myrv.setLayoutManager(new GridLayoutManager(this, 3));
         myrv.setAdapter(myAdapter);
 
@@ -76,18 +86,25 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                lstAgent.add(new Agent("mobil", "982929041", R.drawable.call, 1777));
+                addItem("manual add");
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
     }
 
+    void addItem(String... item){
+        lstAgent.add(new Agent(item[0], "123456987", R.drawable.ring, item.length));
+        //myAdapter.notifyDataSetChanged();
+        myAdapter.notifyItemInserted(lstAgent.size() - 1);
+    }
+
     ///*
     private void cnxWebSocket(){
         URI uri;
         try {
-            uri = new URI("ws://192.168.3.107:8000/ws");
+//            uri = new URI("ws://192.168.3.107:8000/ws");
+            uri = new URI("ws://ryr.progr.am/ws");
         }catch (URISyntaxException e){
             e.printStackTrace();
             return;
@@ -115,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 String aux = "";
 
                 String name = "";
-                String theMessage = "";
+                String data = "";
                 try {
                     json = new JSONObject(message);
                     Log.i(">>>> from server",  json.toString());
@@ -123,23 +140,25 @@ public class MainActivity extends AppCompatActivity {
                     //json = new JSONObject(aux);
 
                     //name = json.getString("event").toString();
-                    //theMessage = json.getString("data").toString();
+                    //data = json.getString("data").toString();
 
                     name = json.getString("event").toString();
-                    theMessage = json.getString("data").toString();
+                    data = json.getString("data").toString();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 //final String auxMessage = aux;
-                final String auxMessage = "EVENT: " + name + " - DATA: " + theMessage;
+                final String auxMessage = "EVENT: " + name + " - DATA: " + data;
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Log.i("DEBUG", auxMessage + " - " + message);
                         TextView textView = (TextView) findViewById(R.id.txtHistory);
-
+//                        showAddItemDialog(MainActivity.this);
+//                        createDialog();
+//                        openDialog();
                         //textView.setText(textView.getText() + "\n" + auxMessage);
                         textView.setText(auxMessage + "\n" + textView.getText());
                     }
@@ -161,6 +180,61 @@ public class MainActivity extends AppCompatActivity {
     }
 //*/
 
+//    call -> showAddItemDialog(MainActivity.this);
+    private void showAddItemDialog(Context c) {
+        final EditText taskEditText = new EditText(c);
+        AlertDialog dialog = new AlertDialog.Builder(c)
+                .setTitle("Add a new task")
+                .setMessage("What do you want to do next?")
+                .setView(taskEditText)
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String task = String.valueOf(taskEditText.getText());
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+    }
+
+    private void createDialog(){
+
+        final String[] option = {"Add" , "View" , "Select" , "Delete"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.select_dialog_item,option);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select option");
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        final  AlertDialog a = builder.create();
+        a.show();
+    }
+
+    public void openDialog(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Are you sure, You wanted to make decision");
+                alertDialogBuilder.setPositiveButton("yes",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                Toast.makeText(MainActivity.this,"You clicked yes button",Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+        alertDialogBuilder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
