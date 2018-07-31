@@ -1,5 +1,6 @@
 package com.example.eidan.wsapp;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,56 +35,58 @@ import android.content.DialogInterface;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+import android.provider.Settings.Secure;
 
 public class MainActivity extends AppCompatActivity {
     private WebSocketClient wsClient;
     EditText txtMessage;
     TextView txtHistory;
     List<Agent> lstAgent;
-
+    String deviceID;
     RecyclerView myrv;
     RecyclerViewAdapter myAdapter;
 
+    @SuppressLint("HardwareIds")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        deviceID = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
         lstAgent = new ArrayList<>();
         lstAgent.add(new Agent("mobil", "982929041", R.drawable.call, 1777));
         lstAgent.add(new Agent("mobil", "982929041", R.drawable.hangup, 1777));
         lstAgent.add(new Agent("mobil", "982929041", R.drawable.ring, 1777));
 
-        myrv = (RecyclerView) findViewById(R.id.recyclerview_agent_id);
+        myrv = findViewById(R.id.recyclerview_agent_id);
         myAdapter = new RecyclerViewAdapter(this, lstAgent);
         myrv.setLayoutManager(new GridLayoutManager(this, 3));
         myrv.setAdapter(myAdapter);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        txtMessage = (EditText) findViewById(R.id.txtMessage);
-        txtHistory = (TextView) findViewById(R.id.txtHistory);
+//        txtMessage = (EditText) findViewById(R.id.txtMessage);
+//        txtHistory = (TextView) findViewById(R.id.txtHistory);
         cnxWebSocket();
-        txtMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                boolean handled = false;
-                if(i == KeyEvent.KEYCODE_ENTER){
-                    //sendMessages();
-                    //txtHistory.setText(txtMessage.getText().toString() + "\n" + txtHistory.getText().toString());
-                    txtHistory.setText(String.format("%s %s %s",txtMessage.getText().toString(),"\n",txtHistory.getText().toString()));
-                    txtMessage.setText("");
-                    handled = true;
+//        txtMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+//                boolean handled = false;
+//                if(i == KeyEvent.KEYCODE_ENTER){
+//                    //sendMessages();
+//                    //txtHistory.setText(txtMessage.getText().toString() + "\n" + txtHistory.getText().toString());
+//                    txtHistory.setText(String.format("%s %s %s",txtMessage.getText().toString(),"\n",txtHistory.getText().toString()));
+//                    txtMessage.setText("");
+//                    handled = true;
+//
+//                }
+//                return handled;
+//            }
+//        });
 
-                }
-                return handled;
-            }
-        });
 
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,12 +117,11 @@ public class MainActivity extends AppCompatActivity {
         wsClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake){
-                Log.i("WebSocket", "Opened");
-                //wsClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+                Log.i("\nWebSocket", "Opened\n");
                 JSONObject payload = new JSONObject();
                 try {
                     payload.put("event", "listFiles");
-                    payload.put("data", "Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+                    payload.put("data", "Hello from " + Build.MANUFACTURER + " - " + "deviceID" +" " + Build.MODEL + "");
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -127,40 +130,47 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onMessage(String s){
-                final String message = s;
-                JSONObject json = null;
-                String aux = "";
+                final String raw = s;
+                JSONObject json;
+                JSONArray jsonArray;
 
-                String name = "";
-                String data = "";
+                String event = "", data = "";
+
+                Log.i("\n>>>> RAW-DATA: ",  raw);
                 try {
-                    json = new JSONObject(message);
-                    Log.i(">>>> from server",  json.toString());
-                    //aux = json.getString("data").toString();
-                    //json = new JSONObject(aux);
+                    if(raw.length() > 0){
+                        json = new JSONObject(raw);
+                        Log.i(">>>> from server: ",  json.toString());
 
-                    //name = json.getString("event").toString();
-                    //data = json.getString("data").toString();
+                        event = json.getString("event").toString();
+//                    data = json.getString("data").toString();
+//                    json = json.getJSONObject(data);
+                        jsonArray = json.getJSONArray("data");
 
-                    name = json.getString("event").toString();
-                    data = json.getString("data").toString();
+                        if(event.equals("fillData")){
+//                        Log.i(">>>\nCALLERID: ", json.getString("callerid"));
+                            Log.i(">>>CALLERID: ", jsonArray.toString());
+                        }else {
+                            Log.i(">>>NOT-PARSED: ", json.toString());
+                        }
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 //final String auxMessage = aux;
-                final String auxMessage = "EVENT: " + name + " - DATA: " + data;
+                final String auxMessage = "EVENT: " + event + " - DATA: " + data;
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("DEBUG", auxMessage + " - " + message);
-                        TextView textView = (TextView) findViewById(R.id.txtHistory);
+                        Log.i("DEBUG", auxMessage + " - " + raw);
+//                        TextView textView = (TextView) findViewById(R.id.txtHistory);
 //                        showAddItemDialog(MainActivity.this);
 //                        createDialog();
 //                        openDialog();
                         //textView.setText(textView.getText() + "\n" + auxMessage);
-                        textView.setText(auxMessage + "\n" + textView.getText());
+//                        textView.setText(auxMessage + "\n" + textView.getText());
                     }
                 });
             }
