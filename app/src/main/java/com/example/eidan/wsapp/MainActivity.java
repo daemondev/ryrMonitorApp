@@ -117,14 +117,16 @@ public class MainActivity extends AppCompatActivity {
         wsClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake){
-                Log.i("\nWebSocket", "Opened\n");
+                Log.i("WebSocket", "Opened");
+                //wsClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
                 JSONObject payload = new JSONObject();
                 try {
                     payload.put("event", "listFiles");
-                    payload.put("data", "Hello from " + Build.MANUFACTURER + " - " + "deviceID" +" " + Build.MODEL + "");
+                    payload.put("data", "Hello from " + Build.MANUFACTURER + " - " + deviceID +" " + Build.MODEL);
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
+                Log.i(">>>>>>>\nWS-CONNECTION", String.format(">>>>>>\nSENDING TO SERVER: %s\n", payload.toString()));
                 wsClient.send(payload.toString());
             }
 
@@ -133,27 +135,27 @@ public class MainActivity extends AppCompatActivity {
                 final String raw = s;
                 JSONObject json;
                 JSONArray jsonArray;
+                String aux = "";
 
-                String event = "", data = "";
-
-                Log.i("\n>>>> RAW-DATA: ",  raw);
+                String event = "";
+                String data = "";
                 try {
-                    if(raw.length() > 0){
-                        json = new JSONObject(raw);
-                        Log.i(">>>> from server: ",  json.toString());
+                    json = new JSONObject(raw);
+                    Log.i(">>>> from server",  json.toString());
 
-                        event = json.getString("event").toString();
-//                    data = json.getString("data").toString();
+                    event = json.getString("event");
+
 //                    json = json.getJSONObject(data);
-                        jsonArray = json.getJSONArray("data");
+                    jsonArray = json.getJSONArray("data");
 
-                        if(event.equals("fillData")){
+                    if(event.equals("fillData")){
 //                        Log.i(">>>\nCALLERID: ", json.getString("callerid"));
-                            Log.i(">>>CALLERID: ", jsonArray.toString());
-                        }else {
-                            Log.i(">>>NOT-PARSED: ", json.toString());
-                        }
+//                        Log.i(">>>\nCALLERID: ", jsonArray.getJSONObject(0).toString());
+                        Log.i(">>>\nCALLERID: ", jsonArray.toString());
+                    }else {
+                        Log.i(">>>\nNOT-PARSED: ", json.toString());
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
