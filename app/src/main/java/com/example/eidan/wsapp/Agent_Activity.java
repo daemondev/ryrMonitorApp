@@ -16,16 +16,16 @@ public class Agent_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agent_);
 
-        callType = (TextView) findViewById(R.id.txt_agent_callType);
-        phone = (TextView) findViewById(R.id.txt_agent_phone);
-        callerID = (TextView) findViewById(R.id.txt_agent_callerID);
-        status = (ImageView) findViewById(R.id.img_agent_status);
+        callType = (TextView) findViewById(R.id.txt_agent_calltype);
+        phone = (TextView) findViewById(R.id.txt_agent_exten);
+        callerID = (TextView) findViewById(R.id.txt_agent_callerid);
+        status = (ImageView) findViewById(R.id.img_agent_state);
 
         Intent intent = getIntent();
-        String _callType = intent.getExtras().getString("callType");
-        String _phone = intent.getExtras().getString("phone");
-        String _callerID = intent.getExtras().getString("callerID");
-        int _status = intent.getExtras().getInt("status");
+        String _callType = intent.getExtras().getString("calltype");
+        String _phone = intent.getExtras().getString("exten");
+        String _callerID = intent.getExtras().getString("callerid");
+        int _status = intent.getExtras().getInt("state");
 
         callType.setText(_callType);
         phone.setText(_phone);

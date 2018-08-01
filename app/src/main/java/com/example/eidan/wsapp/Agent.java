@@ -5,48 +5,48 @@ package com.example.eidan.wsapp;
  */
 
 public class Agent {
-    String callType, phone;
-    int status, callerID;
+    String calltype, exten;
+    int state, callerid;
 
     public Agent() {
     }
 
-    public Agent(String callType, String phone, int status, int callerID) {
-        this.callType = callType;
-        this.phone = phone;
-        this.status = status;
-        this.callerID = callerID;
+    public Agent(String calltype, String exten, int state, int callerid) {
+        this.calltype = calltype;
+        this.exten = exten;
+        this.state = state;
+        this.callerid = callerid;
     }
 
-    public String getCallType() {
-        return callType;
+    public String getCalltype() {
+        return calltype;
     }
 
-    public void setCallType(String callType) {
-        this.callType = callType;
+    public void setCalltype(String calltype) {
+        this.calltype = calltype;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getExten() {
+        return exten;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setExten(String exten) {
+        this.exten = exten;
     }
 
-    public int getStatus() {
-        return status;
+    public int getState() {
+        return state;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setState(int state) {
+        this.state = state;
     }
 
-    public int getCallerID() {
-        return callerID;
+    public int getCallerid() {
+        return callerid;
     }
 
-    public void setCallerID(int callerID) {
-        this.callerID = callerID;
+    public void setCallerid(int callerid) {
+        this.callerid = callerid;
     }
 }

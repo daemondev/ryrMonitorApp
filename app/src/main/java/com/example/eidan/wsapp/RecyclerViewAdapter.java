@@ -36,16 +36,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        holder.tv_phone.setText(mData.get(position).getPhone());
-        holder.img_status.setImageResource(mData.get(position).getStatus());
+        holder.tv_exten.setText(mData.get(position).getExten());
+        holder.img_status.setImageResource(mData.get(position).getState());
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, Agent_Activity.class);
-                intent.putExtra("callerID", mData.get(position).getCallerID());
-                intent.putExtra("phone", mData.get(position).getPhone());
-                intent.putExtra("status", mData.get(position).getStatus());
-                intent.putExtra("callType", mData.get(position).getCallType());
+                intent.putExtra("callerid", mData.get(position).getCallerid());
+                intent.putExtra("exten", mData.get(position).getExten());
+                intent.putExtra("state", mData.get(position).getState());
+                intent.putExtra("calltype", mData.get(position).getCalltype());
                 mContext.startActivity(intent);
             }
         });
@@ -58,14 +59,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView tv_phone;
+        TextView tv_exten;
         ImageView img_status;
         CardView cardView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            tv_phone = (TextView) itemView.findViewById(R.id.agent_id);
+            tv_exten = (TextView) itemView.findViewById(R.id.agent_id);
             img_status = (ImageView) itemView.findViewById(R.id.agent_img_status);
             cardView = (CardView) itemView.findViewById(R.id.cardview_agent_id);
         }

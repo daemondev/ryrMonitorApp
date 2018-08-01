@@ -46,16 +46,22 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView myrv;
     RecyclerViewAdapter myAdapter;
 
+    Bundle b;
+
+
     @SuppressLint("HardwareIds")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         deviceID = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+
+        b = new Bundle();
+        b.putInt("TALKING",R.drawable.call);
+        b.putInt("IDLE",R.drawable.hangup);
+        b.putInt("RINGING",R.drawable.ring);
+
         lstAgent = new ArrayList<>();
-        lstAgent.add(new Agent("mobil", "982929041", R.drawable.call, 1777));
-        lstAgent.add(new Agent("mobil", "982929041", R.drawable.hangup, 1777));
-        lstAgent.add(new Agent("mobil", "982929041", R.drawable.ring, 1777));
 
         myrv = findViewById(R.id.recyclerview_agent_id);
         myAdapter = new RecyclerViewAdapter(this, lstAgent);
@@ -65,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        txtMessage = (EditText) findViewById(R.id.txtMessage);
-//        txtHistory = (TextView) findViewById(R.id.txtHistory);
         cnxWebSocket();
 //        txtMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 //            @Override
@@ -90,17 +94,17 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addItem("manual add");
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, "Update List", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         });
     }
 
-    void addItem(String... item){
-        lstAgent.add(new Agent(item[0], "123456987", R.drawable.ring, item.length));
-        //myAdapter.notifyDataSetChanged();
-        myAdapter.notifyItemInserted(lstAgent.size() - 1);
+    void addItem(List<Agent> agents){
+        for (Agent agent: agents){
+            lstAgent.add(agent);
+        }
+        myAdapter.notifyDataSetChanged();
+//        myAdapter.notifyItemInserted(lstAgent.size() - 1);
     }
 
     ///*
@@ -131,48 +135,44 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onMessage(String s){
-                final String raw = s;
-                JSONObject json;
-                JSONArray jsonArray;
-                String aux = "";
+            public void onMessage(String message){
+                final String raw_message = message;
+                JSONObject raw; JSONArray data;
 
                 String event = "";
-                String data = "";
+
+                List<Agent> agents = new ArrayList<>();
                 try {
-                    json = new JSONObject(raw);
-                    Log.i(">>>> from server",  json.toString());
-
-                    event = json.getString("event");
-
-//                    json = json.getJSONObject(data);
-                    jsonArray = json.getJSONArray("data");
+                    raw = new JSONObject(raw_message); Log.i(">>>> from server",  raw.toString());
+                    event = raw.getString("event");
+                    data = raw.getJSONArray("data");
 
                     if(event.equals("fillData")){
-//                        Log.i(">>>\nCALLERID: ", json.getString("callerid"));
-//                        Log.i(">>>\nCALLERID: ", jsonArray.getJSONObject(0).toString());
-                        Log.i(">>>\nCALLERID: ", jsonArray.toString());
+                        JSONObject agentDict;
+                        for (int i=0; i<data.length();i++){
+                            agentDict = (JSONObject) data.get(i);
+                            agents.add(new Agent(agentDict.getString("calltype"),agentDict.getString("exten"),b.getInt(agentDict.getString("state")),agentDict.getInt("callerid")));
+                        }
                     }else {
-                        Log.i(">>>\nNOT-PARSED: ", json.toString());
+                        Log.i(">>>\nNOT-PARSED: ", raw.toString());
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                //final String auxMessage = aux;
-                final String auxMessage = "EVENT: " + event + " - DATA: " + data;
+                final List<Agent> aa = agents;
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("DEBUG", auxMessage + " - " + raw);
-//                        TextView textView = (TextView) findViewById(R.id.txtHistory);
 //                        showAddItemDialog(MainActivity.this);
 //                        createDialog();
 //                        openDialog();
-                        //textView.setText(textView.getText() + "\n" + auxMessage);
-//                        textView.setText(auxMessage + "\n" + textView.getText());
+                        addItem(aa);
+//                        addItem(agents);
+
+
                     }
                 });
             }
