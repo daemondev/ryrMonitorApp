@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
@@ -25,7 +26,9 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.util.Log;
 import android.os.Build;
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     String deviceID;
     RecyclerView myrv;
     RecyclerViewAdapter myAdapter;
+    TextView tv_qty;
 
     Bundle b;
 
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         deviceID = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
-
+        tv_qty = findViewById(R.id.tv_qty);
         b = new Bundle();
         b.putInt("TALKING",R.drawable.call);
         b.putInt("IDLE",R.drawable.hangup);
@@ -65,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
 
         myrv = findViewById(R.id.recyclerview_agent_id);
         myAdapter = new RecyclerViewAdapter(this, lstAgent);
-        myrv.setLayoutManager(new GridLayoutManager(this, 3));
+        myrv.setLayoutManager(new GridLayoutManager(this, 5));
+//        myrv.setLayoutManager(new GridLayoutManager(this, Utility.calculateNoOfColumns(getApplicationContext())));
+//        myrv.setLayoutManager(new GridLayoutManager(this, ColumnQty(this, R.id.recyclerview_agent_id)));
         myrv.setAdapter(myAdapter);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -99,14 +105,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    Map<Integer,Integer> mmap = new HashMap<Integer, Integer>();
+
     void addItem(List<Agent> agents){
         for (Agent agent: agents){
             lstAgent.add(agent);
+            mmap.put(agent.getCallerid(),lstAgent.indexOf(agent));
         }
         myAdapter.notifyDataSetChanged();
+        tv_qty.setText("Total Agents: ["+lstAgent.size()+"]");
 //        myAdapter.notifyItemInserted(lstAgent.size() - 1);
     }
 
+    void updateState(List<Agent> agent){
+        try {
+            int index = mmap.get(agent.get(0).getCallerid());
+            lstAgent.set(index, agent.get(0));
+            myAdapter.notifyItemChanged(index);
+        }catch (Exception e){
+            addItem(agent);
+        }
+    }
     ///*
     private void cnxWebSocket(){
         URI uri;
@@ -145,15 +164,18 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     raw = new JSONObject(raw_message); Log.i(">>>> from server",  raw.toString());
                     event = raw.getString("event");
-                    data = raw.getJSONArray("data");
-
+                    JSONObject agentDict;
                     if(event.equals("fillData")){
-                        JSONObject agentDict;
+                        data = raw.getJSONArray("data");
+
                         for (int i=0; i<data.length();i++){
                             agentDict = (JSONObject) data.get(i);
                             agents.add(new Agent(agentDict.getString("calltype"),agentDict.getString("exten"),b.getInt(agentDict.getString("state")),agentDict.getInt("callerid")));
                         }
-                    }else {
+                    }else if(event.equals("updateState")){
+                        agentDict = raw.getJSONObject("data").getJSONObject("row");
+                        agents.add(new Agent(agentDict.getString("calltype"),agentDict.getString("exten"),b.getInt(agentDict.getString("state")),agentDict.getInt("callerid")));
+                    }else{
                         Log.i(">>>\nNOT-PARSED: ", raw.toString());
                     }
 
@@ -161,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                final List<Agent> aa = agents;
+                final List<Agent> aa = agents; final String ee = event;
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -169,9 +191,13 @@ public class MainActivity extends AppCompatActivity {
 //                        showAddItemDialog(MainActivity.this);
 //                        createDialog();
 //                        openDialog();
-                        addItem(aa);
-//                        addItem(agents);
 
+//                        addItem(agents);
+                        if(ee.equals("updateState")){
+                            updateState(aa);
+                        }else{
+                            addItem(aa);
+                        }
 
                     }
                 });
@@ -289,5 +315,45 @@ public class MainActivity extends AppCompatActivity {
 
         wsClient.send(payload.toString());
         txtMessage.setText("");
+    }
+}
+
+class Utility {
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / 180);
+        return noOfColumns;
+    }
+}
+
+class ColumnQty {
+    private int width, height, remaining;
+    private DisplayMetrics displayMetrics;
+
+    public ColumnQty(Context context, int viewId) {
+
+        View view = View.inflate(context, viewId, null);
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        width = view.getMeasuredWidth();
+        height = view.getMeasuredHeight();
+        displayMetrics = context.getResources().getDisplayMetrics();
+    }
+    public int calculateNoOfColumns() {
+
+        int numberOfColumns = displayMetrics.widthPixels / width;
+        remaining = displayMetrics.widthPixels - (numberOfColumns * width);
+//        System.out.println("\nRemaining\t" + remaining + "\nNumber Of Columns\t" + numberOfColumns);
+        if (remaining / (2 * numberOfColumns) < 15) {
+            numberOfColumns--;
+            remaining = displayMetrics.widthPixels - (numberOfColumns * width);
+        }
+        return numberOfColumns;
+    }
+    public int calculateSpacing() {
+
+        int numberOfColumns = calculateNoOfColumns();
+//        System.out.println("\nNumber Of Columns\t"+ numberOfColumns+"\nRemaining Space\t"+remaining+"\nSpacing\t"+remaining/(2*numberOfColumns)+"\nWidth\t"+width+"\nHeight\t"+height+"\nDisplay DPI\t"+displayMetrics.densityDpi+"\nDisplay Metrics Width\t"+displayMetrics.widthPixels);
+        return remaining / (2 * numberOfColumns);
     }
 }

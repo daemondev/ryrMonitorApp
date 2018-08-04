@@ -19,11 +19,11 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapter.MyViewHolder>{
 
     Context mContext;
-    List<Agent> mData;
+    List<Agent> lstAgent;
 
-    public RecyclerViewAdapter(Context mContext, List<Agent> mData) {
+    public RecyclerViewAdapter(Context mContext, List<Agent> lstAgent) {
         this.mContext = mContext;
-        this.mData = mData;
+        this.lstAgent = lstAgent;
     }
 
     @Override
@@ -36,17 +36,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        holder.tv_exten.setText(mData.get(position).getExten());
-        holder.img_status.setImageResource(mData.get(position).getState());
+        holder.tv_agent_calling_number.setText(lstAgent.get(position).getExten());
+        holder.tv_calltype.setText(lstAgent.get(position).getCalltype());
+        holder.tv_callerid.setText(lstAgent.get(position).getCallerid()+"");
+        holder.img_status.setImageResource(lstAgent.get(position).getState());
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, Agent_Activity.class);
-                intent.putExtra("callerid", mData.get(position).getCallerid());
-                intent.putExtra("exten", mData.get(position).getExten());
-                intent.putExtra("state", mData.get(position).getState());
-                intent.putExtra("calltype", mData.get(position).getCalltype());
+                intent.putExtra("callerid", lstAgent.get(position).getCallerid());
+                intent.putExtra("exten", lstAgent.get(position).getExten());
+                intent.putExtra("state", lstAgent.get(position).getState());
+                intent.putExtra("calltype", lstAgent.get(position).getCalltype());
                 mContext.startActivity(intent);
             }
         });
@@ -54,19 +56,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return lstAgent.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView tv_exten;
+        TextView tv_agent_calling_number, tv_callerid, tv_calltype;
         ImageView img_status;
         CardView cardView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            tv_exten = (TextView) itemView.findViewById(R.id.agent_id);
+            tv_agent_calling_number = (TextView) itemView.findViewById(R.id.agent_calling_number);
+            tv_calltype = (TextView) itemView.findViewById(R.id.agent_calltype);
+            tv_callerid = (TextView) itemView.findViewById(R.id.agent_id);
             img_status = (ImageView) itemView.findViewById(R.id.agent_img_status);
             cardView = (CardView) itemView.findViewById(R.id.cardview_agent_id);
         }

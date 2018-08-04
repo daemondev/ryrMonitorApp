@@ -5,7 +5,18 @@ package com.example.eidan.wsapp;
  */
 
 public class Agent {
-    String calltype, exten;
+    String calltype;
+    String exten;
+
+    public String getCallrank() {
+        return callrank;
+    }
+
+    public void setCallrank(String callrank) {
+        this.callrank = callrank;
+    }
+
+    String callrank;
     int state, callerid;
 
     public Agent() {
