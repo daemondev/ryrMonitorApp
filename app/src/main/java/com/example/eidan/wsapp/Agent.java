@@ -7,6 +7,14 @@ package com.example.eidan.wsapp;
 public class Agent {
     String calltype;
     String exten;
+    String callrank;
+
+    int state;
+    int callerid;
+
+    int totalcalls;
+    int answeredcalls;
+    int idlecalls;
 
     public String getCallrank() {
         return callrank;
@@ -16,8 +24,29 @@ public class Agent {
         this.callrank = callrank;
     }
 
-    String callrank;
-    int state, callerid;
+    public int getTotalcalls() {
+        return totalcalls;
+    }
+
+    public void setTotalcalls(int totalcalls) {
+        this.totalcalls = totalcalls;
+    }
+
+    public int getAnsweredcalls() {
+        return answeredcalls;
+    }
+
+    public void setAnsweredcalls(int answeredcalls) {
+        this.answeredcalls = answeredcalls;
+    }
+
+    public int getIdlecalls() {
+        return idlecalls;
+    }
+
+    public void setIdlecalls(int idlecalls) {
+        this.idlecalls = idlecalls;
+    }
 
     public Agent() {
     }

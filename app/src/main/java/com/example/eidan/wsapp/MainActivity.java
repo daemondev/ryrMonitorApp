@@ -1,7 +1,10 @@
 package com.example.eidan.wsapp;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -52,18 +55,24 @@ public class MainActivity extends AppCompatActivity {
 
     Bundle b;
 
+//    SharedPreferences preferences;
+//    SharedPreferences.Editor editor;
 
-    @SuppressLint("HardwareIds")
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        preferences = getSharedPreferences("dd_monitor", Context.MODE_PRIVATE);
+//        editor = preferences.edit();
+
+//        preferences = preferences = PreferenceManager.getDefaultSharedPreferences(this);;
+
         deviceID = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
         tv_qty = findViewById(R.id.tv_qty);
         b = new Bundle();
         b.putInt("TALKING",R.drawable.call);
         b.putInt("IDLE",R.drawable.hangup);
-        b.putInt("RINGING",R.drawable.ring);
+        b.putInt("RINGING",R.drawable.ring2);
 
         lstAgent = new ArrayList<>();
 
