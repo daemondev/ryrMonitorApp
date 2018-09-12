@@ -49,6 +49,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
                 intent.putExtra("exten", lstAgent.get(position).getExten());
                 intent.putExtra("state", lstAgent.get(position).getState());
                 intent.putExtra("calltype", lstAgent.get(position).getCalltype());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 mContext.startActivity(intent);
             }
         });

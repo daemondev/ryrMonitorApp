@@ -36,11 +36,11 @@
 
 
     <!--<style name="CustomHintDisabled" parent="ThemeOverlay.AppCompat.Light">-->
-        <!--<item name="colorPrimary">@color/colorYellow</item>-->
+    <!--<item name="colorPrimary">@color/colorYellow</item>-->
     <!--</style>-->
 
     <!--<style name="CustomHintEnabled" parent="ThemeOverlay.AppCompat.Light">-->
-        <!--<item name="colorPrimary">@color/colorYellow</item>-->
+    <!--<item name="colorPrimary">@color/colorYellow</item>-->
     <!--</style>-->
 
 </resources>

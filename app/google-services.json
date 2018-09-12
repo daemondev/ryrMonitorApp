@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "315374103806",
-    "firebase_url": "https://superb-gear-93406.firebaseio.com",
-    "project_id": "superb-gear-93406",
-    "storage_bucket": "superb-gear-93406.appspot.com"
+    "project_number": "954784874727",
+    "firebase_url": "https://wsapp-f3e8d.firebaseio.com",
+    "project_id": "wsapp-f3e8d",
+    "storage_bucket": "wsapp-f3e8d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:315374103806:android:1a994a7d8527648f",
+        "mobilesdk_app_id": "1:954784874727:android:ee3e589d7b879723",
         "android_client_info": {
-          "package_name": "com.daemondev.monitor"
+          "package_name": "com.daemondev.eidan.wsapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "315374103806-pm0n457v562abrq2ka973kegdibesrpe.apps.googleusercontent.com",
+          "client_id": "954784874727-f4ffgubu7oe0fc72pal49esshvrkpsj5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDYYAXAcbmHj1E__hynE5Jt_owgI8Xh4xg"
+          "current_key": "AIzaSyAg4GA7ROCjU96A5_nopKGCtH0u__G91ic"
         }
       ],
       "services": {

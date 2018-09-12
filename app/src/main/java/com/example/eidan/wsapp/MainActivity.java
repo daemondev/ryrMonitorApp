@@ -44,7 +44,7 @@ import android.widget.Toast;
 import android.provider.Settings.Secure;
 
 public class MainActivity extends AppCompatActivity {
-    private WebSocketClient wsClient;
+    public static WebSocketClient wsClient;
     EditText txtMessage;
     TextView txtHistory;
     List<Agent> lstAgent;
@@ -103,8 +103,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-
-
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
     private void cnxWebSocket(){
         URI uri;
         try {
-//            uri = new URI("ws://192.168.3.107:8000/ws");
-            uri = new URI("ws://ryr.progr.am/ws");
+            uri = new URI("ws://192.168.3.107:8000/ws"); //URL DEV LOCALHOST
+//            uri = new URI("ws://ryr.progr.am/ws"); //URL PRODUCTION
         }catch (URISyntaxException e){
             e.printStackTrace();
             return;
@@ -153,17 +151,22 @@ public class MainActivity extends AppCompatActivity {
                 //wsClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
                 JSONObject payload = new JSONObject();
                 try {
-                    payload.put("event", "listFiles");
-                    payload.put("data", "Hello from " + Build.MANUFACTURER + " - " + deviceID +" " + Build.MODEL);
+                    payload.put("event", "identify_android_device");
+                    payload.put("data", Build.MANUFACTURER + "-" + deviceID +"-" + Build.MODEL);
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
-                Log.i(">>>>>>>\nWS-CONNECTION", String.format(">>>>>>\nSENDING TO SERVER: %s\n", payload.toString()));
+                Log.i("\n>>>>>>>WS-CONNECTION", String.format(">>>>>>\nSENDING TO SERVER: %s\n", payload.toString()));
                 wsClient.send(payload.toString());
             }
 
             @Override
             public void onMessage(String message){
+//                if(message.equals("xxx")) {
+//                    Log.i("\n\n>>>XXX!\n\n", String.format("\n\n\n\n>>> %s \n\n\n\n", message));
+//                    Agent_Activity.tv_callerID.setText("from MAIN>>>>>>");
+//                    return;
+//                }
                 final String raw_message = message;
                 JSONObject raw; JSONArray data;
 
@@ -181,9 +184,12 @@ public class MainActivity extends AppCompatActivity {
                             agentDict = (JSONObject) data.get(i);
                             agents.add(new Agent(agentDict.getString("calltype"),agentDict.getString("exten"),b.getInt(agentDict.getString("state")),agentDict.getInt("callerid")));
                         }
-                    }else if(event.equals("updateState")){
+                    }else if(event.equals("updateState")) {
                         agentDict = raw.getJSONObject("data").getJSONObject("row");
-                        agents.add(new Agent(agentDict.getString("calltype"),agentDict.getString("exten"),b.getInt(agentDict.getString("state")),agentDict.getInt("callerid")));
+                        agents.add(new Agent(agentDict.getString("calltype"), agentDict.getString("exten"), b.getInt(agentDict.getString("state")), agentDict.getInt("callerid")));
+                    }else if(event.equals("paintChart")){
+                        Log.i("\n>>>PAINTING CHART!!!: ", String.format("\n\n>>> %s \n\n", raw.toString()));
+                        Agent_Activity.pa
                     }else{
                         Log.i(">>>\nNOT-PARSED: ", raw.toString());
                     }
