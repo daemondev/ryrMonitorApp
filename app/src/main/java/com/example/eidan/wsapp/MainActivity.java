@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
     private void cnxWebSocket(){
         URI uri;
         try {
-            //uri = new URI("ws://192.168.3.107:8000/ws"); //URL DEV LOCALHOST
-            uri = new URI("ws://ryr.progr.am/ws"); //URL PRODUCTION
+            uri = new URI("ws://192.168.3.107:8000/ws"); //URL DEV LOCALHOST
+//            uri = new URI("ws://ryr.progr.am/ws"); //URL PRODUCTION
         }catch (URISyntaxException e){
             e.printStackTrace();
             return;

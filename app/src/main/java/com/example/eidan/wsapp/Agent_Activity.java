@@ -16,9 +16,11 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.EntryXComparator;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.java_websocket.client.WebSocketClient;
 import org.json.JSONArray;
@@ -122,12 +124,6 @@ public class Agent_Activity extends AppCompatActivity /*implements Runnable*/ {
                 e.printStackTrace();
             }
 
-
-//            l.add(new Agent("MoBiles", "987456321", R.drawable.call, 1900));
-//            l.add(new Agent("MoBiles", "987456321", R.drawable.call, 1900));
-//            l.add(new Agent("MoBiles", "987456321", R.drawable.call, 1900));
-//            l.add(new Agent("MoBiles", "987456321", R.drawable.call, 1900));
-//
 //            //<<<<<<<<        tblAgent.setHeaderAdapter(new SimpleTableHeaderAdapter(this,"CALLTYPE", "EXTEN", "STATUS","CALLERID"));
 //            da = new AgentTableDataAdapter(this, l, tblAgent);
             da.notifyDataSetChanged();
@@ -217,7 +213,7 @@ public class Agent_Activity extends AppCompatActivity /*implements Runnable*/ {
             LineData data = new LineData(dataSets);
     //        data.notifyDataChanged();
             mLineChart = (LineChart) findViewById(R.id.theLineChart);
-
+            data.setValueFormatter(new MyValueFormatter());
             mLineChart.setScaleEnabled(false);
             mLineChart.setDragEnabled(false);
 
@@ -234,3 +230,4 @@ public class Agent_Activity extends AppCompatActivity /*implements Runnable*/ {
 //
 //    }
 }
+
